@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: wwt-postgres
+    environment:
+      POSTGRES_DB: wwt
+      POSTGRES_USER: wwt
+      POSTGRES_PASSWORD: wwt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4:9.8
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: demo@example.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: wwt-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+  auth-api:
+    build: ./auth-api
+    container_name: wwt-auth-api
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/wwt
+      SPRING_DATASOURCE_USERNAME: wwt
+      SPRING_DATASOURCE_PASSWORD: wwt
+      JWT_SECRET: MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk
+      INTERNAL_TOKEN: MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk
+    depends_on:
+      - postgres
+      - pgadmin
+      - kafka
+      - data-api
+
+  data-api:
+    build: ./data-api
+    container_name: wwt-data-api
+    ports:
+      - "8081:8081"
+    environment:
+      INTERNAL_TOKEN: MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk
+
+volumes:
+  postgres-data:

@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5434/wwt
+    username: wwt
+    password: wwt
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+  sql:
+    init:
+      continue-on-error: true
+      mode: always
+      schema-locations: classpath:/data/schema.sql
+  kafka:
+    bootstrap-servers: localhost:9092
+
+api:
+  data: http://localhost:8081/api/v1/transform

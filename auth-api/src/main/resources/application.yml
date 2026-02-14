@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    init:
+      continue-on-error: true
+      mode: always
+      schema-locations: classpath:/data/schema.sql
+  jwt:
+    secret: ${JWT_SECRET:MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk}
+    internal-token: ${INTERNAL_TOKEN:MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_GROUP_ID:process-group}
+    producer:
+      group-id: ${KAFKA_GROUP_ID:process-group}
+    topic-requests: ${KAFKA_TOPIC:process-requests}
+    topic-results: ${KAFKA_TOPIC:process-results}
+
+server:
+  port:8080
+
+api:
+  data: http://data-api:8081/api/v1/transform
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,0 +1,27 @@
+server:
+  port: 8081
+
+spring:
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:wwt-kafka:9092}
+    consumer:
+      group-id: ${KAFKA_GROUP_ID:process-group}
+    topic-requests: ${KAFKA_TOPIC:process-requests}
+    topic-results: ${KAFKA_TOPIC:process-results}
+
+  jwt:
+    internal-token: ${INTERNAL_TOKEN:MkU3OEVBNMkMkU3OEVBNTcwNTJENDM2QkU3OEVBNTcwNMkU3OEVBNTcwNTJENDM2QkTJENDM2QkTcwNTJENDM2Qk}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
